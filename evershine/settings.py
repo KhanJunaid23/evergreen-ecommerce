@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # Custom Apps
-    'core'
+    'core',
+    'userauth'
 ]
 
 MIDDLEWARE = [
@@ -80,12 +81,8 @@ WSGI_APPLICATION = 'evershine.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'evershine',
-        'USER': 'evershine',
-        'PASSWORD': 'evershine@124578#',
-        'HOST': 'localhost',
-        'PORT': '5432',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3'
     }
 }
 
@@ -142,3 +139,6 @@ JAZZMIN_SETTINGS = {
     'site_logo':'assets/imgs/theme/loading.gif',
     'site_copyright': 'evershine-shop.com'
 }
+
+
+AUTH_USER_MODEL = 'userauth.User'
