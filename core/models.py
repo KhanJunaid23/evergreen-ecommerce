@@ -56,6 +56,11 @@ class Products(models.Model):
     price = models.DecimalField(max_digits=15,decimal_places=2, default="1.99")
     old_price = models.DecimalField(max_digits=15,decimal_places=2, default="2.99")
     specification = models.TextField(null=True,blank=True)
+    color = models.CharField(max_length=100, null=True, blank=True)
+    material = models.CharField(max_length=100, null=True, blank=True)
+    dimensions = models.CharField(max_length=100, null=True, blank=True)
+    inside_the_box = models.CharField(max_length=200, null=True, blank=True)
+    delivery_time = models.CharField(max_length=200, null=True, blank=True)
     # tags = models.ForeignKey(Tags,on_delete=models.SET_NULL, null=True)
     product_status = models.CharField(choices=STATUS, max_length=10, default="in_review")
     status = models.BooleanField(default=True)
@@ -80,7 +85,7 @@ class Products(models.Model):
     
 class ProductImages(models.Model):
     images = models.ImageField(upload_to="product_images",default="product.jpg")
-    product = models.ForeignKey(Products, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Products, related_name="p_images", on_delete=models.SET_NULL, null=True)
     added_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -141,7 +146,7 @@ class Wishlist(models.Model):
 
 class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    address = models.CharField(max_length=100,null=True)
+    address = models.CharField(max_length=256,null=True)
     status = models.BooleanField(default=False)
 
     class Meta:

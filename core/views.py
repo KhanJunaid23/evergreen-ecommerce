@@ -21,8 +21,11 @@ def category_list_view(request):
 def category_product_list__view(request,cid):
     category = Category.objects.get(cid=cid)
     products = Products.objects.filter(product_status="published",category=category)
-    context = {
-        "category":category,
-        "products":products
-    }
+    context = {"category":category,"products":products}
     return render(request,'core/category-product-list.html',context)
+
+def product_detail_view(request,pid):
+    product = Products.objects.get(pid=pid)
+    p_image = product.p_images.all()
+    context = {"p":product,"p_image":p_image}
+    return render(request,'core/product-detail.html',context)
