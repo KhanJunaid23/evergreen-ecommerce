@@ -64,7 +64,7 @@
                                             </div>
                                         </div>
                                         <div class="short-desc mb-30">
-                                            <p class="font-lg">{{ p.description | truncatechars:150 }}</p>
+                                            <p class="font-lg">{{ p.description | safe | truncatechars:150 }}</p>
                                         </div>
                                         <div class="detail-extralink mb-50">
                                             <div class="detail-qty border radius">
@@ -108,7 +108,7 @@
                                     <div class="tab-content shop_info_tab entry-main-content">
                                         <div class="tab-pane fade show active" id="Description">
                                             <div class="">
-                                                <p>{{ p.description }}</p>
+                                                <p>{{ p.description | safe }}</p>
                                             </div>
                                         </div>
                                         <div class="tab-pane fade" id="Additional-info">

@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.html import mark_safe
+from ckeditor_uploader.fields import RichTextUploadingField
 from shortuuid.django_fields import ShortUUIDField
 from taggit.managers import TaggableManager
 from userauth.models import User
@@ -53,10 +54,10 @@ class Products(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name="category")
     title = models.CharField(max_length=100, default="This is a product")
     image = models.ImageField(upload_to=user_directory_path, default="product.jpg")
-    description = models.TextField(null=True,blank=True,default="This is the product details")
+    description = RichTextUploadingField(null=True,blank=True,default="This is the product details")
     price = models.DecimalField(max_digits=15,decimal_places=2, default="1.99")
     old_price = models.DecimalField(max_digits=15,decimal_places=2, default="2.99")
-    specification = models.TextField(null=True,blank=True)
+    specification = RichTextUploadingField(null=True,blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
     material = models.CharField(max_length=100, null=True, blank=True)
     dimensions = models.CharField(max_length=100, null=True, blank=True)
