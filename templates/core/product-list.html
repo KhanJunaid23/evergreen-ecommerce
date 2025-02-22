@@ -27,18 +27,13 @@
                                 <h5 class="mb-30">By Categories</h5>
                                 <div class="categories-dropdown-wrap font-heading">
                                     <ul>
+                                        {% for c in categories %}
                                         <li>
-                                            <a href="shop-grid-right.html"> <img src="assets/imgs/theme/icons/category-1.svg" alt="" />Milks and Dairies</a>
+                                            <input data-filter="category" class="form-check-input filter-checkbox" type="checkbox" name="checkbox" id="exampleCheckbox100" value="{{ c.id }}" />
+                                            &nbsp;&nbsp;
+                                            <a href="{% url 'core:category-product-list' c.cid %}"> <img src="{{ c.image.url }}" alt="" />{{ c.title }}</a>
                                         </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="assets/imgs/theme/icons/category-2.svg" alt="" />Clothing &amp; beauty</a>
-                                        </li>
-                                        <li>
-                                            <a href="shop-grid-right.html"> <img src="assets/imgs/theme/icons/category-3.svg" alt="" />Pet Foods &amp; Toy</a>
-                                        </li>
-                                        <li class="mb-0">
-                                            <a href="shop-grid-right.html"> <img src="assets/imgs/theme/icons/category-4.svg" alt="" />Baking material</a>
-                                        </li>
+                                        {% endfor %}
                                     </ul>
                                 </div>
                             </div>
@@ -47,7 +42,7 @@
                             <div class="card">
                                 <h5 class="mb-30">By Vendors</h5>
                                 <div class="d-flex">
-                                    <div class="custome-checkbox mr-80">
+                                    <div class="customeee-checkbox mr-80">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1" value="" />
                                         <label class="form-check-label" for="exampleCheckbox1"><span>Aldi</span></label>
                                         <br />
@@ -205,7 +200,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row product-grid">
+                <div class="row product-grid" id="filtered-product">
                     {% for p in products %}
                     <div class="col-lg-1-5 col-md-4 col-12 col-sm-6">
                         <div class="product-cart-wrap mb-30">
@@ -282,7 +277,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img">
                                         <a href="shop-product-right.html">
-                                            <img src="assets/imgs/banner/banner-5.png" alt="" />
+                                            <img src="{% static 'assets/imgs/banner/banner-5.png' %}" alt="" />
                                         </a>
                                     </div>
                                 </div>
@@ -319,7 +314,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img">
                                         <a href="shop-product-right.html">
-                                            <img src="assets/imgs/banner/banner-6.png" alt="" />
+                                            <img src="{% static 'assets/imgs/banner/banner-6.png' %}" alt="" />
                                         </a>
                                     </div>
                                 </div>
@@ -356,7 +351,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img">
                                         <a href="shop-product-right.html">
-                                            <img src="assets/imgs/banner/banner-7.png" alt="" />
+                                            <img src="{% static 'assets/imgs/banner/banner-7.png' %}" alt="" />
                                         </a>
                                     </div>
                                 </div>
@@ -393,7 +388,7 @@
                                 <div class="product-img-action-wrap">
                                     <div class="product-img">
                                         <a href="shop-product-right.html">
-                                            <img src="assets/imgs/banner/banner-8.png" alt="" />
+                                            <img src="{% static 'assets/imgs/banner/banner-8.png' %}" alt="" />
                                         </a>
                                     </div>
                                 </div>

@@ -1,6 +1,7 @@
+from django.db.models import Avg
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
-from django.db.models import Avg
+from django.template.loader import render_to_string
 from taggit.models import Tag
 from core.models import Category,Products,ProductReview
 from core.forms import ProductReviewForm
@@ -63,4 +64,12 @@ def search_view(request):
     products = Products.objects.filter(title__icontains=query).order_by("-added_date")
     context={"products":products,"query":query}
     return render(request,'core/search.html',context)
+
+def filter_product(request):
+    categories = request.GET.getlist("category[]")
+    products = Products.objects.filter(product_status="published").order_by("-id").distinct()
+    if len(categories) > 0:
+        products = products.filter(category__id__in=categories).distinct()
+    data = render_to_string("core/async/product-list.html",{"products":products})
+    return JsonResponse({"data":data})
 
