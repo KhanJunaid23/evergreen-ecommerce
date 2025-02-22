@@ -53,10 +53,14 @@ def tag_list(request,tag_slug=None):
 def ajax_add_review(request,pid):
     product = Products.objects.get(pk=pid)
     user = request.user
-    print(request.POST)
     review = ProductReview.objects.create(user=user,product=product,review=request.POST['review'],rating=request.POST['rating'])
     context = {"user":user.username,"review":request.POST['review'],"rating":request.POST['rating']}
     average_reviews = ProductReview.objects.filter(product=product).aggregate(rating=Avg('rating'))
     return JsonResponse({'bool':True,'context':context,'average_reviews':average_reviews})
 
+def search_view(request):
+    query = request.GET.get("q")
+    products = Products.objects.filter(title__icontains=query).order_by("-added_date")
+    context={"products":products,"query":query}
+    return render(request,'core/search.html',context)
 
