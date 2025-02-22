@@ -1,6 +1,5 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-from django.db.models import Count
+from django.shortcuts import get_object_or_404, render
+from taggit.models import Tag
 from core.models import Category,Products
 
 def index(request):
@@ -30,3 +29,12 @@ def product_detail_view(request,pid):
     p_image = product.p_images.all()
     context = {"p":product,"p_image":p_image,"products":related_products}
     return render(request,'core/product-detail.html',context)
+
+def tag_list(request,tag_slug=None):
+    products = Products.objects.filter(product_status="published")
+    tag = None
+    if tag_slug:
+        tag = get_object_or_404(Tag,slug=tag_slug)
+        products = products.filter(tags__in=[tag])
+    context = {"products":products,"tag":tag}
+    return render(request,'core/tag.html',context)
