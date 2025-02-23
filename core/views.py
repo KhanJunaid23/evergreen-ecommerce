@@ -67,7 +67,11 @@ def search_view(request):
 
 def filter_product(request):
     categories = request.GET.getlist("category[]")
+    min_price = request.GET['min_price']
+    max_price = request.GET['max_price']
     products = Products.objects.filter(product_status="published").order_by("-id").distinct()
+    products = products.filter(price__gte=min_price)
+    products = products.filter(price__lte=max_price)
     if len(categories) > 0:
         products = products.filter(category__id__in=categories).distinct()
     data = render_to_string("core/async/product-list.html",{"products":products})

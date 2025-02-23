@@ -10,7 +10,6 @@ $('#commentForm').submit(function(e){
         url:$(this).attr("action"),
         dataType:"json",
         success:function(response){
-            console.log("Comment saved");
             if(response.bool== true){
                 $('#review-res').html("Review added successfully.");
                 $('.hide-comment-form').hide();
@@ -47,19 +46,19 @@ $('#commentForm').submit(function(e){
 
 
 $(document).ready(function(){
-    $(".filter-checkbox").on("click", function(){
-        console.log("A Checkbox is clicked"); 
+    $(".filter-checkbox, #price-filter-btn").on("click", function(){
         let filter_object = {};
+        let min_price = $("#max_price").attr("min");
+        let max_price = $("#max_price").val();
+        filter_object.min_price = min_price;
+        filter_object.max_price = max_price;
         $(".filter-checkbox").each(function(){
             let filter_value = $(this).val();
             let filter_key = $(this).data("filter");
-            console.log("Filter Value is: ",filter_value);            
-            console.log("Filter Key is: ",filter_key);
             filter_object[filter_key] = Array.from(document.querySelectorAll('input[data-filter=' + filter_key +']:checked')).map(function(element){
                 return element.value
             })    
         })
-        console.log("Filter Object is: ", filter_object);
         $.ajax({
             url:'/filter-products',
             data:filter_object,
@@ -68,7 +67,6 @@ $(document).ready(function(){
                 console.log("Sending Data.....");                
             },
             success: function(response){
-                console.log(response);
                 $("#filtered-product").html(response.data)
             }
         })
