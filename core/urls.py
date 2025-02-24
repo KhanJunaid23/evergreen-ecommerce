@@ -3,6 +3,7 @@ from core.views import (
     index,
     add_to_cart, 
     cart_view, 
+    update_cart,
     delete_item_from_cart,
     filter_product, 
     product_list_view, 
@@ -27,6 +28,7 @@ urlpatterns = [
     path("search/",search_view,name="search"),
     path("filter-products/",filter_product,name="filter-products"),
     path("add-to-cart/",add_to_cart,name="add-to-cart"),
+    path("update-cart/",update_cart,name="update-cart"),
     path("delete-from-cart/",delete_item_from_cart,name="delete-from-cart"),
     path("cart/",cart_view,name="cart"),
 ]
