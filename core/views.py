@@ -1,6 +1,7 @@
+from django.contrib import messages
 from django.db.models import Avg
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from taggit.models import Tag
 from core.models import Category,Products,ProductReview
@@ -98,5 +99,14 @@ def add_to_cart(request):
             request.session['cart_data_obj'] = cart_data
     else:
         request.session['cart_data_obj'] = cart_product
-    return JsonResponse({"data":request.session['cart_data_obj'], 'totalcartitems': len(request.session['cart_data_obj'])})
+    return JsonResponse({"data":request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj'])})
 
+def cart_view(request):
+    cart_total_amount = 0
+    if 'cart_data_obj' in request.session:
+        for pid, item in request.session['cart_data_obj'].items():
+            cart_total_amount += int(item['qty']) * float(item['price'])
+        return render(request,'core/cart.html',{"cart_data":request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']),"cart_total_amount":cart_total_amount})
+    else:
+        messages.warning(request,"Your Cart is empty")
+        return redirect("core:index")
