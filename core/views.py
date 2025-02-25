@@ -1,11 +1,17 @@
+import razorpay
+from core.forms import ProductReviewForm
+from core.models import Category,Products,ProductReview
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from paypal.standard.forms import PayPalPaymentsForm
 from taggit.models import Tag
-from core.models import Category,Products,ProductReview
-from core.forms import ProductReviewForm
 
 def index(request):
     products= Products.objects.filter(product_status="published",featured=True)
@@ -140,9 +146,40 @@ def update_cart(request):
     context = render_to_string("core/async/cart-list.html",{"cart_data":request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']),"cart_total_amount":cart_total_amount})
     return JsonResponse({"data":context, "totalcartitems": len(request.session['cart_data_obj'])})          
 
+@login_required
 def checkout_view(request):
+    host = request.get_host()
+    paypal_dict={
+        'business':settings.PAYPAL_RECEIVER_EMAIL,
+        'amount':'200',
+        'item_name':"Order-Item-No-3",
+        'invoice':"INVOICE_NO_3",
+        'currency_code': "USD",
+        'notify_url':"http://{}{}".format(host,reverse("core:paypal-ipn")),        
+        'return_url':"http://{}{}".format(host,reverse("core:payment-completed")),        
+        'cancel_url':"http://{}{}".format(host,reverse("core:payment-failed")),        
+    }
+    paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
+    razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    razorpay_order = razorpay_client.order.create({
+        "amount": 200,
+        "currency": "INR",
+        "payment_capture": "1",
+    })
     cart_total_amount = 0
     if 'cart_data_obj' in request.session:
         for pid, item in request.session['cart_data_obj'].items():
             cart_total_amount += int(item['qty']) * float(item['price'])
-        return render(request,'core/checkout.html',{"cart_data":request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']),"cart_total_amount":cart_total_amount})
+        return render(request, 'core/checkout.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount, "paypal_payment_button": paypal_payment_button,"razorpay_order_id": razorpay_order['id'],"razorpay_key": settings.RAZORPAY_KEY_ID,"currency": "INR"})
+
+def payment_completed_view(request):
+    return render(request,"core/payment-completed.html")
+
+def payment_failed_view(request):
+    return render(request,"core/payment-failed.html")
+
+def razorpay_payment_success_view(request):
+    return render(request,"core/razorpay-payment-success.html")
+
+def razorpay_payment_failed_view(request):
+    return render(request,"core/razorpay-payment-failed.html")

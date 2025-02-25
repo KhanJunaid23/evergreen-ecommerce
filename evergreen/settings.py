@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -43,6 +44,9 @@ INSTALLED_APPS = [
     # Third Party
     'taggit',
     'ckeditor',
+
+    # Payment Integration
+    'paypal.standard.ipn',
     
     # Custom Apps
     'core',
@@ -145,6 +149,7 @@ JAZZMIN_SETTINGS = {
     'site_copyright': 'evergreen-shop.com'
 }
 
+LOGIN_URL = "userauth:sign-in"
 
 AUTH_USER_MODEL = 'userauth.User'
 
@@ -163,3 +168,9 @@ CKEDITOR_CONFIGS = {
         ),
     }
 }
+
+PAYPAL_RECEIVER_EMAIL = config("PAYPAL_RECEIVER_EMAIL")
+PAYPAL_TEST = True
+
+RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")

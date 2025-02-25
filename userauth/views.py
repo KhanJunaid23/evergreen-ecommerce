@@ -1,11 +1,9 @@
-from django.shortcuts import redirect, render
-from django.contrib.auth import login, logout, authenticate
-from django.contrib import messages
 from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login, logout, authenticate
+from django.shortcuts import redirect, render
 from userauth.forms import UserRegisterForm
 from userauth.models import User
-
-# User = settings.AUTH_USER_MODEL
 
 def register_view(request):
     if request.method == "POST":

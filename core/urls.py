@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from core.views import (
     index,
     add_to_cart, 
@@ -13,7 +13,11 @@ from core.views import (
     tag_list, 
     search_view,
     ajax_add_review,
-    checkout_view
+    checkout_view,
+    payment_completed_view,
+    payment_failed_view,
+    razorpay_payment_success_view,
+    razorpay_payment_failed_view
 )
 
 app_name = "core"
@@ -33,4 +37,9 @@ urlpatterns = [
     path("delete-from-cart/",delete_item_from_cart,name="delete-from-cart"),
     path("cart/",cart_view,name="cart"),
     path("checkout/",checkout_view,name="checkout"),
+    path("paypal/",include("paypal.standard.ipn.urls")),
+    path("payment-completed/",payment_completed_view, name="payment-completed"),
+    path("payment-failed/",payment_failed_view, name="payment-failed"),
+    path("razorpay-payment-success/",razorpay_payment_success_view, name="razorpay-payment-success"),
+    path("razorpay-payment-failed/",razorpay_payment_failed_view, name="razorpay-payment-failed"),
 ]
