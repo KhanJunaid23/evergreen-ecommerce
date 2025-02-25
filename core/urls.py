@@ -12,7 +12,8 @@ from core.views import (
     category_product_list__view, 
     tag_list, 
     search_view,
-    ajax_add_review
+    ajax_add_review,
+    checkout_view
 )
 
 app_name = "core"
@@ -31,4 +32,5 @@ urlpatterns = [
     path("update-cart/",update_cart,name="update-cart"),
     path("delete-from-cart/",delete_item_from_cart,name="delete-from-cart"),
     path("cart/",cart_view,name="cart"),
+    path("checkout/",checkout_view,name="checkout"),
 ]
