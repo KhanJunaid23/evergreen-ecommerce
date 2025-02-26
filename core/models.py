@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.db import models
 from django.utils.html import mark_safe
 from ckeditor_uploader.fields import RichTextUploadingField
@@ -6,7 +7,7 @@ from taggit.managers import TaggableManager
 from userauth.models import User
 
 STATUS_CHOICE = (
-    ("process","Processing"),
+    ("processing","Processing"),
     ("shipped","Shipped"),
     ("delivered","Delivered"),
 )
@@ -55,8 +56,8 @@ class Products(models.Model):
     title = models.CharField(max_length=100, default="This is a product")
     image = models.ImageField(upload_to=user_directory_path, default="product.jpg")
     description = RichTextUploadingField(null=True,blank=True,default="This is the product details")
-    price = models.DecimalField(max_digits=15,decimal_places=2, default="1.99")
-    old_price = models.DecimalField(max_digits=15,decimal_places=2, default="2.99")
+    price = models.DecimalField(max_digits=15,decimal_places=2, default=Decimal("1.99"))
+    old_price = models.DecimalField(max_digits=15,decimal_places=2, default=Decimal("2.99"))
     specification = RichTextUploadingField(null=True,blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
     material = models.CharField(max_length=100, null=True, blank=True)
@@ -95,7 +96,7 @@ class ProductImages(models.Model):
 
 class CartOrder(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    price = models.DecimalField(max_digits="9999999999999",decimal_places=2, default="1.99")
+    price = models.DecimalField(max_digits=15,decimal_places=2, default=Decimal("1.99"))
     paid_status = models.BooleanField(default=False)
     order_date = models.DateTimeField(auto_now_add=True)
     product_status = models.CharField(choices=STATUS_CHOICE, max_length=30, default="processing")
@@ -110,11 +111,14 @@ class CartOrderItems(models.Model):
     item = models.CharField(max_length=200)
     image = models.CharField(max_length=200)
     qty = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits="9999999999999",decimal_places=2, default="1.99")
-    total = models.DecimalField(max_digits="9999999999999",decimal_places=2, default="1.99")
+    price = models.DecimalField(max_digits=15,decimal_places=2, default=Decimal("1.99"))
+    total = models.DecimalField(max_digits=15,decimal_places=2, default=Decimal("2.99"))
 
     class Meta:
         verbose_name_plural = "Cart Order Items"
+
+    def category_image(self):
+        return mark_safe('<img src="%s" width="50" height="50" />' % (self.image.url))
 
     def order_img(self):
         return mark_safe('<img src="/media/%s" width="50" height="50" />' % (self.image))

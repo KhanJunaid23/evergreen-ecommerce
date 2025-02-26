@@ -1,6 +1,7 @@
 import razorpay
+import time
 from core.forms import ProductReviewForm
-from core.models import Category,Products,ProductReview
+from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -148,31 +149,33 @@ def update_cart(request):
 
 @login_required
 def checkout_view(request):
-    host = request.get_host()
-    paypal_dict={
-        'business':settings.PAYPAL_RECEIVER_EMAIL,
-        'amount':'200',
-        'item_name':"Order-Item-No-3",
-        'invoice':"INVOICE_NO_3",
-        'currency_code': "USD",
-        'notify_url':"http://{}{}".format(host,reverse("core:paypal-ipn")),        
-        'return_url':"http://{}{}".format(host,reverse("core:payment-completed")),        
-        'cancel_url':"http://{}{}".format(host,reverse("core:payment-failed")),        
-    }
-    paypal_payment_button = PayPalPaymentsForm(initial=paypal_dict)
+    cart_total_amount = 0
+    total_amount = 0
+    if 'cart_data_obj' in request.session:
+        for pid, item in request.session['cart_data_obj'].items():
+            total_amount += int(item['qty']) * float(item['price'])
+        order = CartOrder.objects.create(user=request.user,price=total_amount)
+        for pid, item in request.session['cart_data_obj'].items():
+            cart_total_amount += int(item['qty']) * float(item['price'])
+            cart_product_items = CartOrderItems.objects.create(
+                order=order,
+                invoice_no="INVOICE_NO_"+str(order.id),
+                item=item['title'],
+                image=item['image'],
+                qty=item['qty'],
+                price=item['price'],
+                total=float(item['qty'])*float(item['price'])
+            )
     razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
     razorpay_order = razorpay_client.order.create({
-        "amount": 200,
+        "amount": cart_total_amount*100,
         "currency": "INR",
         "payment_capture": "1",
     })
-    cart_total_amount = 0
-    if 'cart_data_obj' in request.session:
-        for pid, item in request.session['cart_data_obj'].items():
-            cart_total_amount += int(item['qty']) * float(item['price'])
-        return render(request, 'core/checkout.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount, "paypal_payment_button": paypal_payment_button,"razorpay_order_id": razorpay_order['id'],"razorpay_key": settings.RAZORPAY_KEY_ID,"currency": "INR"})
+    return render(request, 'core/checkout.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount,"razorpay_order_id": razorpay_order['id'],"razorpay_key": settings.RAZORPAY_KEY_ID,"currency": "INR"})
 
 @csrf_exempt
+@login_required
 def payment_completed_view(request):
     cart_total_amount = 0
     if 'cart_data_obj' in request.session:
@@ -185,11 +188,4 @@ def payment_failed_view(request):
 
 @csrf_exempt
 def razorpay_payment_success_view(request):
-    cart_total_amount = 0
-    if 'cart_data_obj' in request.session:
-        for pid, item in request.session['cart_data_obj'].items():
-            cart_total_amount += int(item['qty']) * float(item['price'])
-    return render(request, 'core/razorpay-payment-success.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount})
-
-def razorpay_payment_failed_view(request):
-    return render(request,"core/razorpay-payment-failed.html")
+    return render(request, 'core/razorpay-payment-success.html')

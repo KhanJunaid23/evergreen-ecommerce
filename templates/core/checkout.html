@@ -695,22 +695,21 @@
                         <img src="{% static 'assets/imgs/theme/icons/payment-zapper.svg' %}" alt="">
                     </div>
                     <div class="mt-3">
-                        {{ paypal_payment_button.render }}
-                    </div>
-                    <form action="{% url 'core:razorpay-payment-success' %}" method="POST" class="mt-3">
-                        {% csrf_token %}
-                        <script 
-                            src="https://checkout.razorpay.com/v1/checkout.js"
-                            data-key="{{ razorpay_key }}" 
-                            data-amount="{{ cart_total_amount|floatformat:2|add:0 }}" 
-                            data-currency="{{ currency }}"
-                            data-order_id="{{ razorpay_order_id }}"
-                            data-buttontext="Pay with Razorpay"
-                            data-name="Your Store Name"
-                            data-description="Secure Payment with Razorpay"
-                            data-theme.color="#3399cc">
-                        </script>
-                    </form>                    
+                        <form action="{% url 'core:razorpay-payment-success' %}" method="POST" class="mt-3">
+                            {% csrf_token %}
+                            <script 
+                                src="https://checkout.razorpay.com/v1/checkout.js"
+                                data-key="{{ razorpay_key }}" 
+                                data-amount="{{ cart_total_amount|floatformat:2|add:0 }}" 
+                                data-currency="{{ currency }}"
+                                data-order_id="{{ razorpay_order_id }}"
+                                data-buttontext="Pay with Razorpay"
+                                data-name="Your Store Name"
+                                data-description="Secure Payment with Razorpay"
+                                data-theme.color="#3399cc">
+                            </script>
+                        </form>
+                    </div>                    
                 </div>
             </div>
         </div>
