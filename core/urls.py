@@ -16,7 +16,9 @@ from core.views import (
     checkout_view,
     payment_completed_view,
     payment_failed_view,
-    razorpay_payment_success_view
+    razorpay_payment_success_view,
+    customer_dashboard,
+    order_details
 )
 
 app_name = "core"
@@ -40,4 +42,6 @@ urlpatterns = [
     path("payment-completed/",payment_completed_view, name="payment-completed"),
     path("payment-failed/",payment_failed_view, name="payment-failed"),
     path("razorpay-payment-success/",razorpay_payment_success_view, name="razorpay-payment-success"),
+    path("dashboard/",customer_dashboard, name="dashboard"),
+    path("dashboard/order/<int:id>",order_details, name="order-detail"),
 ]

@@ -189,3 +189,15 @@ def payment_failed_view(request):
 @csrf_exempt
 def razorpay_payment_success_view(request):
     return render(request, 'core/razorpay-payment-success.html')
+
+@login_required
+def customer_dashboard(request):
+    orders = CartOrder.objects.filter(user=request.user).order_by("-id")
+    context = {"orders":orders}
+    return render(request,"core/dashboard.html",context)
+
+def order_details(request,id):
+    order = CartOrder.objects.get(user=request.user,id=id)
+    order_items = CartOrderItems.objects.filter(order=order)
+    context = {"order_items":order_items}
+    return render(request, 'core/order-detail.html', context)
