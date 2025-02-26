@@ -1,7 +1,7 @@
 import razorpay
 import time
 from core.forms import ProductReviewForm
-from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems
+from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems, Address
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -172,7 +172,12 @@ def checkout_view(request):
         "currency": "INR",
         "payment_capture": "1",
     })
-    return render(request, 'core/checkout.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount,"razorpay_order_id": razorpay_order['id'],"razorpay_key": settings.RAZORPAY_KEY_ID,"currency": "INR"})
+    try:
+        active_address = Address.objects.get(user=request.user, status=True)
+    except:
+        messages.warning(request,"There are multiple addresses, only one should be activated.")
+        active_address = None
+    return render(request, 'core/checkout.html', {"cart_data": request.session['cart_data_obj'], "totalcartitems": len(request.session['cart_data_obj']), "cart_total_amount": cart_total_amount,"razorpay_order_id": razorpay_order['id'],"razorpay_key": settings.RAZORPAY_KEY_ID,"currency": "INR","active_address":active_address})
 
 @csrf_exempt
 @login_required
@@ -191,9 +196,17 @@ def razorpay_payment_success_view(request):
     return render(request, 'core/razorpay-payment-success.html')
 
 @login_required
+@csrf_exempt
 def customer_dashboard(request):
     orders = CartOrder.objects.filter(user=request.user).order_by("-id")
-    context = {"orders":orders}
+    address = Address.objects.filter(user=request.user)
+    if request.method == "POST":
+        address = request.POST.get("address")
+        mobile = request.POST.get("phone")
+        new_address = Address.objects.create(user=request.user,address=address,mobile=mobile)
+        messages.success(request,"Address added successfully")
+        return redirect("core:dashboard")
+    context = {"orders":orders,"address":address}
     return render(request,"core/dashboard.html",context)
 
 def order_details(request,id):
@@ -201,3 +214,9 @@ def order_details(request,id):
     order_items = CartOrderItems.objects.filter(order=order)
     context = {"order_items":order_items}
     return render(request, 'core/order-detail.html', context)
+
+def make_address_default(request):
+    id = request.GET['id']
+    Address.objects.filter(user=request.user).update(status=False)
+    Address.objects.filter(id=id).update(status=True)
+    return JsonResponse({"boolean":True})

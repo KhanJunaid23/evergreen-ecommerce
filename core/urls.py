@@ -18,7 +18,8 @@ from core.views import (
     payment_failed_view,
     razorpay_payment_success_view,
     customer_dashboard,
-    order_details
+    order_details,
+    make_address_default
 )
 
 app_name = "core"
@@ -44,4 +45,5 @@ urlpatterns = [
     path("razorpay-payment-success/",razorpay_payment_success_view, name="razorpay-payment-success"),
     path("dashboard/",customer_dashboard, name="dashboard"),
     path("dashboard/order/<int:id>",order_details, name="order-detail"),
+    path("make-default-address/",make_address_default, name="make-default-address"),
 ]
