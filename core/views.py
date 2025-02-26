@@ -1,7 +1,7 @@
 import razorpay
 import time
 from core.forms import ProductReviewForm
-from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems, Address
+from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems,Address,Wishlist
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -157,7 +157,7 @@ def checkout_view(request):
         order = CartOrder.objects.create(user=request.user,price=total_amount)
         for pid, item in request.session['cart_data_obj'].items():
             cart_total_amount += int(item['qty']) * float(item['price'])
-            cart_product_items = CartOrderItems.objects.create(
+            CartOrderItems.objects.create(
                 order=order,
                 invoice_no="INVOICE_NO_"+str(order.id),
                 item=item['title'],
@@ -203,7 +203,7 @@ def customer_dashboard(request):
     if request.method == "POST":
         address = request.POST.get("address")
         mobile = request.POST.get("phone")
-        new_address = Address.objects.create(user=request.user,address=address,mobile=mobile)
+        Address.objects.create(user=request.user,address=address,mobile=mobile)
         messages.success(request,"Address added successfully")
         return redirect("core:dashboard")
     context = {"orders":orders,"address":address}
@@ -220,3 +220,15 @@ def make_address_default(request):
     Address.objects.filter(user=request.user).update(status=False)
     Address.objects.filter(id=id).update(status=True)
     return JsonResponse({"boolean":True})
+
+def add_to_wishlist(request):
+    product_id = request.GET['id']
+    product = Products.objects.get(id=product_id)
+    context = {}
+    wishlist_count = Wishlist.objects.filter(product=product, user=request.user).count()
+    if wishlist_count > 0:
+        context = {"bool":True}
+    else:
+        Wishlist.objects.create(user=request.user, product=product)
+        context = {"bool":True}
+    return JsonResponse(context)

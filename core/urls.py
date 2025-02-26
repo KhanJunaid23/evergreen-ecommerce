@@ -19,7 +19,8 @@ from core.views import (
     razorpay_payment_success_view,
     customer_dashboard,
     order_details,
-    make_address_default
+    make_address_default,
+    add_to_wishlist
 )
 
 app_name = "core"
@@ -46,4 +47,5 @@ urlpatterns = [
     path("dashboard/",customer_dashboard, name="dashboard"),
     path("dashboard/order/<int:id>",order_details, name="order-detail"),
     path("make-default-address/",make_address_default, name="make-default-address"),
+    path("add-to-wishlist/",add_to_wishlist, name="add-to-wishlist"),
 ]
