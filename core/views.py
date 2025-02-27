@@ -1,5 +1,4 @@
 import razorpay
-import time
 from core.forms import ProductReviewForm
 from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems,Address,Wishlist
 from django.conf import settings
@@ -11,8 +10,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from paypal.standard.forms import PayPalPaymentsForm
 from taggit.models import Tag
+from userauth.models import Profile
 
 def index(request):
     products= Products.objects.filter(product_status="published",featured=True)
@@ -206,7 +205,8 @@ def customer_dashboard(request):
         Address.objects.create(user=request.user,address=address,mobile=mobile)
         messages.success(request,"Address added successfully")
         return redirect("core:dashboard")
-    context = {"orders":orders,"address":address}
+    user_profile = Profile.objects.get(user=request.user)
+    context = {"orders":orders,"address":address,"user_profile":user_profile}
     return render(request,"core/dashboard.html",context)
 
 def order_details(request,id):
