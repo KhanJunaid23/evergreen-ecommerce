@@ -20,6 +20,7 @@ from core.views import (
     customer_dashboard,
     order_details,
     make_address_default,
+    wishlist_view,
     add_to_wishlist
 )
 
@@ -47,5 +48,6 @@ urlpatterns = [
     path("dashboard/",customer_dashboard, name="dashboard"),
     path("dashboard/order/<int:id>",order_details, name="order-detail"),
     path("make-default-address/",make_address_default, name="make-default-address"),
+    path("wishlist/",wishlist_view, name="wishlist"),
     path("add-to-wishlist/",add_to_wishlist, name="add-to-wishlist"),
 ]

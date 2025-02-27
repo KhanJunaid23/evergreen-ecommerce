@@ -221,6 +221,14 @@ def make_address_default(request):
     Address.objects.filter(id=id).update(status=True)
     return JsonResponse({"boolean":True})
 
+def wishlist_view(request):
+    try:
+        wishlist = Wishlist.objects.filter(user=request.user)
+    except:
+        wishlist = None
+    context = {"wishlist":wishlist}
+    return render(request, 'core/wishlist.html', context)
+
 def add_to_wishlist(request):
     product_id = request.GET['id']
     product = Products.objects.get(id=product_id)
