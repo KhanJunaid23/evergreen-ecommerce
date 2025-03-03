@@ -86,6 +86,9 @@
                                                 From your account dashboard. you can easily check &amp; view your <a href="#">recent orders</a>,<br />
                                                 manage your <a href="#">shipping and billing addresses</a> and <a href="#">edit your password and account details.</a>
                                             </p>
+                                            <div>
+                                                <canvas style="height: 50px;" id="myChart"></canvas>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +111,7 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        {% for o in orders %}
+                                                        {% for o in order_list %}
                                                         <tr>
                                                             <td>INVOICE_NO_{{ o.id }}</td>
                                                             <td>{{ o.order_date }}</td>
@@ -251,5 +254,26 @@
         </div>
     </div>
 </main>
-
+<script>
+    const ctx = document.getElementById('myChart');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{ month | safe }},
+        datasets: [{
+            label: 'Orders',
+            backGroundColor: 'rgb(59,183,126)',
+            borderColor: 'rgb(59,183,126)',
+            data: {{ total_orders | safe }}
+            }]
+        },
+        options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+    });
+</script>
 {% endblock content %}

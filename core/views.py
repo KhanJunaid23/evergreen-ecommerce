@@ -1,3 +1,4 @@
+import calendar
 import razorpay
 from core.forms import ProductReviewForm
 from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems,Address,Wishlist
@@ -5,7 +6,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
-from django.db.models import Avg
+from django.db.models import Avg, Count
+from django.db.models.functions import ExtractMonth
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
@@ -198,8 +200,14 @@ def razorpay_payment_success_view(request):
 @login_required
 @csrf_exempt
 def customer_dashboard(request):
-    orders = CartOrder.objects.filter(user=request.user).order_by("-id")
+    order_list = CartOrder.objects.filter(user=request.user).order_by("-id")
     address = Address.objects.filter(user=request.user)
+    orders = CartOrder.objects.annotate(month=ExtractMonth("order_date")).values("month").annotate(count=Count("id")).values("month","count")
+    month = []
+    total_orders = []
+    for i in orders:
+        month.append(calendar.month_name[i["month"]])
+        total_orders.append(i["count"])
     if request.method == "POST":
         address = request.POST.get("address")
         mobile = request.POST.get("phone")
@@ -207,7 +215,7 @@ def customer_dashboard(request):
         messages.success(request,"Address added successfully")
         return redirect("core:dashboard")
     user_profile = Profile.objects.get(user=request.user)
-    context = {"orders":orders,"address":address,"user_profile":user_profile}
+    context = {"order_list":order_list,"orders":orders,"month":month,"total_orders":total_orders,"address":address,"user_profile":user_profile}
     return render(request,"core/dashboard.html",context)
 
 def order_details(request,id):
