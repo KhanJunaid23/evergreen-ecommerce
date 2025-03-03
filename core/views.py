@@ -4,6 +4,7 @@ from core.models import Category,Products,ProductReview,CartOrder,CartOrderItems
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.db.models import Avg
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -240,3 +241,13 @@ def add_to_wishlist(request):
         Wishlist.objects.create(user=request.user, product=product)
         context = {"bool":True}
     return JsonResponse(context)
+
+def remove_wishlist(request):
+    pid = request.GET['id']
+    wishlist = Wishlist.objects.filter(user=request.user)
+    product = Wishlist.objects.get(id=pid)
+    product.delete()
+    context = {"bool":True,"wishlist":wishlist}
+    wishlist_json = serializers.serialize('json',wishlist)
+    data = render_to_string("core/async/wishlist-list.html",context)
+    return JsonResponse({"data":data,"wishlist":wishlist_json})

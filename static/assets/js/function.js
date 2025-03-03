@@ -141,8 +141,6 @@ $(document).ready(function(){
         let product_id = $(this).attr("data-product");
         let this_val = $(this);
         let product_quantity = $('.product-qty-'+product_id).val()
-        console.log("product_id", product_id)
-        console.log("product_quantity", product_quantity)
         $.ajax({
             url: '/update-cart',
             data:{
@@ -198,6 +196,24 @@ $(document).ready(function(){
                 if(response.bool == true){
                     console.log("Added to Wishlt")
                 }
+            }
+        })
+    })
+
+    $(document).on("click", '.delete-wishlist-product', function(){
+        let wishlist_id = $(this).attr("data-wishlist-product");
+        let this_val = $(this);
+        $.ajax({
+            url:"/remove-from-wishlist",
+            data:{
+                "id":wishlist_id
+            },
+            dataType:"json",
+            beforeSend: function(){
+                console.log("Deleting from Wishlist")
+            },
+            success: function(response){
+                $("#wishlist-list").html(response.data)
             }
         })
     })
