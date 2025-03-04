@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.sessions.models import Session
-from userauth.models import User, Profile
+from userauth.models import User, Profile, ContactUs
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ['username','email','bio']
@@ -17,6 +17,10 @@ class SessionAdmin(admin.ModelAdmin):
 
     decoded_data.short_description = "Session Data"
 
+class ContactUsAdmin(admin.ModelAdmin):
+    list_display = ['full_name','email','phone']
+
 admin.site.register(Session,SessionAdmin)
 admin.site.register(User,UserAdmin)
 admin.site.register(Profile,ProfileAdmin)
+admin.site.register(ContactUs,ContactUsAdmin)

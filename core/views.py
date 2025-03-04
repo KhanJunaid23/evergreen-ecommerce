@@ -14,7 +14,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from taggit.models import Tag
-from userauth.models import Profile
+from userauth.models import ContactUs, Profile
 
 def index(request):
     products= Products.objects.filter(product_status="published",featured=True)
@@ -259,3 +259,15 @@ def remove_wishlist(request):
     wishlist_json = serializers.serialize('json',wishlist)
     data = render_to_string("core/async/wishlist-list.html",context)
     return JsonResponse({"data":data,"wishlist":wishlist_json})
+
+def contact(request):
+    return render(request,"core/contact.html")
+
+def ajax_contact_form(request):
+    full_name = request.GET['full_name']
+    email = request.GET['email']
+    phone = request.GET['phone']
+    message = request.GET['message']
+    ContactUs.objects.create(full_name=full_name,email=email,phone=phone,message=message)
+    data = {"bool":True,"message":"Message Sent Successfully"}
+    return JsonResponse({"data":data})

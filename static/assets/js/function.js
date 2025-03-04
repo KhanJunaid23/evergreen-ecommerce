@@ -217,4 +217,30 @@ $(document).ready(function(){
             }
         })
     })
+
+    $(document).on("submit", '#contact-form-ajax', function(e){
+        e.preventDefault();
+        let full_name = $("#full_name").val();
+        let email = $("#email").val();
+        let phone = $("#phone").val();
+        let message = $("#message").val();
+        $.ajax({
+            url:"/ajax-contact-form",
+            data:{
+                "full_name":full_name,
+                "email":email,
+                "phone":phone,
+                "message":message,
+            },
+            dataType:"json",
+            beforeSend: function(){
+                console.log("Sending data to server")
+            },
+            success: function(response){
+                $(".contact_us_p").hide();                
+                $("#contact-form-ajax").hide();                
+                $("#message-response").html(response.data.message);                
+            }
+        })
+    })
 })

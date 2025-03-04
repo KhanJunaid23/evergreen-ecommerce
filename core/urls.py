@@ -22,7 +22,9 @@ from core.views import (
     make_address_default,
     wishlist_view,
     add_to_wishlist,
-    remove_wishlist
+    remove_wishlist,
+    contact,
+    ajax_contact_form
 )
 
 app_name = "core"
@@ -52,4 +54,6 @@ urlpatterns = [
     path("wishlist/",wishlist_view, name="wishlist"),
     path("add-to-wishlist/",add_to_wishlist, name="add-to-wishlist"),
     path("remove-from-wishlist/",remove_wishlist, name="remove-from-wishlist"),
+    path("contact/",contact, name="contact"),
+    path("ajax-contact-form/",ajax_contact_form, name="ajax-contact-form"),
 ]
